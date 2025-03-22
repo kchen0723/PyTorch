@@ -5,8 +5,8 @@ class Network(object):
     def __init__(self, sizes):
         self.num_layers = len(sizes)
         self.sizes = sizes
-        self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
-        self.weights = [np.random.randn(y, x) for x, y in zip(sizes[:-1], sizes[1:])]
+        self.biases = [np.random.randn(y, 1) for y in sizes[1 :]]
+        self.weights = [np.random.randn(y, x) for x, y in zip(sizes[: -1], sizes[1 :])]
 
     def feedforward(self, a):
         for b, w in zip(self.biases, self.weights):
@@ -19,7 +19,7 @@ class Network(object):
             n = len(training_data)
         for j in range(epochs):
             random.shuffle(training_data)
-            mini_batches = [training_data[k:k+mini_batch_size] for k in range(0, n, mini_batch_size)]
+            mini_batches = [training_data[k : k + mini_batch_size] for k in range(0, n, mini_batch_size)]
             for mini_batch in mini_batches:
                 self.update_mini_batch(mini_batch, learning_rate)
             if test_data:
@@ -31,30 +31,30 @@ class Network(object):
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
         for x, y in mini_batch:
-            delta_nabla_b, delta_nbla_w = self.backprop(x, y)
+            delta_nabla_b, delta_nbla_w = self.back_propagation(x, y)
             nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nb + dnw for nb, dnw in zip(nabla_w, delta_nbla_w)]
             self.weights = [w - (learning_rate / len(mini_batch)) * nw for w, nw in zip(self.weights, nabla_w)]
             self.biases = [b - (learning_rate / len(mini_batch)) * nb for b, nb in zip(self.biases, nabla_b)]
 
-    def backprop(self, x, y):
+    def back_propagation(self, x, y):
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
         activation = x
         activations = [x]
-        zs = []
+        pre_activations = []
         for b, w in zip(self.biases, self.weights):
-            z = np.dot(w, activation) + b
-            zs.append(z)
-            activation = sigmoid(z)
+            pre_activation = np.dot(w, activation) + b
+            pre_activations.append(pre_activation)
+            activation = sigmoid(pre_activation)
             activations.append(activation)
-        delta = self.cost_derivative(activations[-1], y) * sigmoid_prime(zs[-1])
+        delta = self.cost_derivative(activations[-1], y) * sigmoid_prime(pre_activations[-1])
         nabla_b[-1] = delta
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
 
         for i in range(2, self.num_layers):
-            z = zs[-i]
-            sp = sigmoid_prime(z)
+            pre_activation = pre_activations[-i]
+            sp = sigmoid_prime(pre_activation)
             delta = np.dot(self.weights[-i + 1].transpose(), delta) * sp
             nabla_b[-i] = delta
             nabla_w[-i] = np.dot(delta, activations[-i - 1].transpose())
