@@ -54,8 +54,8 @@ class Network(object):
 
         for i in range(2, self.num_layers):
             pre_activation = pre_activations[-i]
-            sp = sigmoid_prime(pre_activation)
-            delta = np.dot(self.weights[-i + 1].transpose(), delta) * sp
+            local_gradient = sigmoid_prime(pre_activation)
+            delta = np.dot(self.weights[-i + 1].transpose(), delta) * local_gradient
             nabla_b[-i] = delta
             nabla_w[-i] = np.dot(delta, activations[-i - 1].transpose())
         return(nabla_b, nabla_w)
