@@ -43,11 +43,17 @@ class Network(object):
         activation = x
         activations = [x]
         pre_activations = []
+        # forward pass
         for b, w in zip(self.biases, self.weights):
             pre_activation = np.dot(w, activation) + b
             pre_activations.append(pre_activation)
             activation = sigmoid(pre_activation)
             activations.append(activation)
+            
+        # backward pass
+        # https://www.youtube.com/watch?v=tIeHLnjs5U8
+        # a = f(w . x + b), so c = y - a = y - f(w . x + b)
+        # so delta(b) = cost * sigmoid_prime, delta(w) = delta(b) * activation[previos layer]
         delta = self.cost_derivative(activations[-1], y) * sigmoid_prime(pre_activations[-1])
         nabla_b[-1] = delta
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
