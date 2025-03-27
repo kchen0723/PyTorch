@@ -53,6 +53,7 @@ class Network(object):
         # backward pass
         # https://www.youtube.com/watch?v=tIeHLnjs5U8
         # a = f(w . x + b), so c = y - a = y - f(w . x + b)
+        # mse = (1/n) * (y-py) * (y - py), so prime(mse) = -2 * (y - py)
         # so delta(b) = cost * sigmoid_prime, delta(w) = delta(b) * activation[previos layer]
         delta = self.cost_derivative(activations[-1], y) * sigmoid_prime(pre_activations[-1])
         nabla_b[-1] = delta
