@@ -13,10 +13,11 @@ class Network(object):
             a = sigmoid(np.dot(w, a) + b)
         return a
 
+    # https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
     def stochastic_gradient_descent(self, training_data, epochs, mini_batch_size, learning_rate, test_data=None):
+        n = len(training_data)
         if test_data:
             n_test = len(test_data)
-            n = len(training_data)
         for j in range(epochs):
             random.shuffle(training_data)
             mini_batches = [training_data[k : k + mini_batch_size] for k in range(0, n, mini_batch_size)]
