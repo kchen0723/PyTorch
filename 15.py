@@ -12,44 +12,44 @@ class MultiHeadAttention(nn.Module):
 
         self.d_model = d_model
         self.num_heads = num_heads
-        self.d_k = d_model // num_heads
+        self.dimension_per_head = d_model // num_heads
 
-        self.W_q = nn.Linear(d_model, d_model)
-        self.W_k = nn.Linear(d_model, d_model)
-        self.W_v = nn.Linear(d_model, d_model)
-        self.W_o = nn.Linear(d_model, d_model)
+        self.Weight_query = nn.Linear(d_model, d_model)
+        self.Weight_key = nn.Linear(d_model, d_model)
+        self.Weight_value = nn.Linear(d_model, d_model)
+        self.Weight_output = nn.Linear(d_model, d_model)
 
-    def scaled_dot_product_attention(self, Q, K, V, mask=None):
-        atten_scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(self.d_k)
+    def scaled_dot_product_attention(self, Query, Key, Value, mask=None):
+        atten_scores = torch.matmul(Query, Key.transpose(-2, -1)) / math.sqrt(self.dimension_per_head)
         if mask is not None:
             atten_scores = atten_scores.masked_fill(mask == 0, -1e9)
 
         atten_probs = torch.softmax(atten_scores, dim=-1)
-        output = torch.matmul(atten_probs, V)
+        output = torch.matmul(atten_probs, Value)
         return output
     
     def split_heads(self, x):
         batch_size, seq_length, d_model = x.size()
-        return x.view(batch_size, seq_length, self.num_heads, self.d_k).transpose(1, 2)
+        return x.view(batch_size, seq_length, self.num_heads, self.dimension_per_head).transpose(1, 2)
     
     def combine_heads(self, x):
-        batch_size, _, seq_length, d_k = x.size()
+        batch_size, _, seq_length, dimension_per_head = x.size()
         return x.transpose(1, 2).contiguous().view(batch_size, seq_length, self.d_model)
     
-    def forward(self, Q, K, V, mask=None):
-        Q = self.split_heads(self.W_q(Q))
-        K = self.split_heads(self.W_k(K))
-        V = self.split_heads(self.W_v(V))
+    def forward(self, Query, Key, Value, mask=None):
+        Query = self.split_heads(self.Weight_query(Query))
+        Key = self.split_heads(self.Weight_key(Key))
+        Value = self.split_heads(self.Weight_value(Value))
 
-        atten_output = self.scaled_dot_product_attention(Q, K, V, mask)
-        output = self.W_o(self.combine_heads(atten_output))
+        atten_output = self.scaled_dot_product_attention(Query, Key, Value, mask)
+        output = self.Weight_output(self.combine_heads(atten_output))
         return output
     
 class PositionWiseFeedForward(nn.Module):
-    def __init__(self, d_modle, d_ff):
+    def __init__(self, d_model, dimension_of_inner_feed_foward_layer):
         super(PositionWiseFeedForward, self).__init__()
-        self.fc1 = nn.Linear(d_model, d_ff)
-        self.fc2 = nn.Linear(d_ff, d_model)
+        self.fc1 = nn.Linear(d_model, dimension_of_inner_feed_foward_layer)
+        self.fc2 = nn.Linear(dimension_of_inner_feed_foward_layer, d_model)
         self.relu = nn.ReLU()
 
     def forward(self, x):
@@ -69,10 +69,10 @@ class PositionalEncoding(nn.Module):
         return x + self.pe[:, :x.size(1)]
         
 class EncoderLayer(nn.Module):
-    def __init__(self, d_model, num_heads, d_ff, dropout):
+    def __init__(self, d_model, num_heads, dimension_of_inner_feed_foward_layer, dropout):
         super(EncoderLayer, self).__init__()
         self.self_attn = MultiHeadAttention(d_model, num_heads)
-        self.feed_forward = PositionWiseFeedForward(d_model, d_ff)
+        self.feed_forward = PositionWiseFeedForward(d_model, dimension_of_inner_feed_foward_layer)
         self.norm1 = nn.LayerNorm(d_model)
         self.norm2 = nn.LayerNorm(d_model)
         self.dropout = nn.Dropout(dropout)
@@ -85,12 +85,12 @@ class EncoderLayer(nn.Module):
         x = self.norm2(x + self.dropout(ff_output))
         return x
 
-class DecorderLayer(nn.Module):
-    def __init__(self, d_model, num_heads, d_ff, dropout):
-        super(DecorderLayer, self).__init__()
+class DecoderLayer(nn.Module):
+    def __init__(self, d_model, num_heads, dimension_of_inner_feed_foward_layer, dropout):
+        super(DecoderLayer, self).__init__()
         self.self_attn = MultiHeadAttention(d_model, num_heads)
         self.cross_attn = MultiHeadAttention(d_model, num_heads)
-        self.feed_forward = PositionWiseFeedForward(d_model, d_ff)
+        self.feed_forward = PositionWiseFeedForward(d_model, dimension_of_inner_feed_foward_layer)
         self.norm1 = nn.LayerNorm(d_model)
         self.norm2 = nn.LayerNorm(d_model)
         self.norm3 = nn.LayerNorm(d_model)
@@ -107,14 +107,14 @@ class DecorderLayer(nn.Module):
         return x
     
 class Transformer(nn.Module):
-    def __init__(self, src_vocab_size, target_vocab_size, d_model, num_heads, num_layers, d_ff, max_seq_length, dropout):
+    def __init__(self, src_vocab_size, target_vocab_size, d_model, num_heads, num_layers, dimension_of_inner_feed_foward_layer, max_seq_length, dropout):
         super(Transformer, self).__init__()
         self.encoder_embedding = nn.Embedding(src_vocab_size, d_model)
         self.decoder_embedding = nn.Embedding(target_vocab_size, d_model)
         self.positional_encoding = PositionalEncoding(d_model, max_seq_length)
 
-        self.encoder_layers = nn.ModuleList([EncoderLayer(d_model, num_heads, d_ff, dropout) for _ in range(num_layers)])
-        self.decoder_layers = nn.ModuleList([DecorderLayer(d_model, num_heads, d_ff, dropout) for _ in range(num_layers)])
+        self.encoder_layers = nn.ModuleList([EncoderLayer(d_model, num_heads, dimension_of_inner_feed_foward_layer, dropout) for _ in range(num_layers)])
+        self.decoder_layers = nn.ModuleList([DecoderLayer(d_model, num_heads, dimension_of_inner_feed_foward_layer, dropout) for _ in range(num_layers)])
         self.fc = nn.Linear(d_model, target_vocab_size)
         self.dropout = nn.Dropout(dropout)
 
@@ -146,11 +146,11 @@ target_vocab_size = 5000
 d_model = 512
 num_heads = 8
 num_layers = 6
-d_ff = 2048
+dimension_of_inner_feed_foward_layer = 2048
 max_seq_length = 100
 dropout = 0.1
 
-transformer = Transformer(src_vocab_size, target_vocab_size, d_model, num_heads, num_layers, d_ff, max_seq_length, dropout)
+transformer = Transformer(src_vocab_size, target_vocab_size, d_model, num_heads, num_layers, dimension_of_inner_feed_foward_layer, max_seq_length, dropout)
 
 src_data = torch.randint(1, src_vocab_size, (64, max_seq_length))
 target_data = torch.randint(1, target_vocab_size, (64, max_seq_length))
