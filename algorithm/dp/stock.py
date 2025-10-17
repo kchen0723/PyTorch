@@ -4,7 +4,6 @@
 # 示例 1:
 # 输入: [7,1,5,3,6,4]
 # 输出: 5
-
 def maxProfitBuyOnlyOnce(arr: list):
     if len(arr) < 2:
         return 0
@@ -17,9 +16,27 @@ def maxProfitBuyOnlyOnce(arr: list):
         dp.append(profit)
 
     return dp[len(arr) - 1]
+
+def maxProfitBuyOnlyOnceDp(arr: list):
+    if len(arr) < 2:
+        return 0
     
+    # base case
+    holdCash = 0
+    holdStock = 0 - arr[0]
+    dp = [[holdCash, holdStock]]
+
+    for i in range(1, len(arr)):
+        holdCash = max(dp[i - 1][0], dp[i - 1][1] + arr[i])  #sell the stock
+        holdStock = max(dp[i - 1][1], 0 - arr[i]) #buy the stock
+        dp.append([holdCash, holdStock])
+
+    return dp[len(arr) - 1][0]
+
 arr = [7, 1, 5, 3, 6, 4]
 result = maxProfitBuyOnlyOnce(arr)
+print(result)
+result = maxProfitBuyOnlyOnceDp(arr)
 print(result)
 
 # 给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
@@ -29,7 +46,7 @@ def maxProfitBuyMultipleTimes(arr: list):
     if len(arr) < 2:
         return 0
     
-    # base condition
+    # base case
     holdCash = 0
     holdStock = 0 - arr[0]
     dp = [[holdCash, holdStock]]
@@ -41,6 +58,6 @@ def maxProfitBuyMultipleTimes(arr: list):
 
     return dp[len(arr) - 1][0]
     
-arr = [7, 2, 6, 1, 7, 2]
+arr = [3, 2, 6, 5, 0, 3]
 result = maxProfitBuyMultipleTimes(arr)
 print(result)
