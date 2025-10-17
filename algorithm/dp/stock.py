@@ -21,3 +21,26 @@ def maxProfitBuyOnlyOnce(arr: list):
 arr = [7, 1, 5, 3, 6, 4]
 result = maxProfitBuyOnlyOnce(arr)
 print(result)
+
+# 给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
+# 设计一个算法来计算你所能获取的最大利润。你可以尽可能地完成更多的交易（多次买卖一支股票）。
+# 注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票
+def maxProfitBuyMultipleTimes(arr: list):
+    if len(arr) < 2:
+        return 0
+    
+    # base condition
+    holdCash = 0
+    holdStock = 0 - arr[0]
+    dp = [[holdCash, holdStock]]
+
+    for i in range(1, len(arr)):
+        holdCash = max(dp[i - 1][0], dp[i - 1][1] + arr[i])  #sell the stock
+        holdStock = max(dp[i - 1][1], dp[i - 1][0] - arr[i]) #buy the stock
+        dp.append([holdCash, holdStock])
+
+    return dp[len(arr) - 1][0]
+    
+arr = [7, 2, 6, 1, 7, 2]
+result = maxProfitBuyMultipleTimes(arr)
+print(result)
