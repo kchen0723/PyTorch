@@ -1,3 +1,5 @@
+import numpy as np
+
 # 给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
 # 如果你最多只允许完成一笔交易（即买入和卖出一支股票一次），设计一个算法来计算你所能获取的最大利润。
 # 注意：你不能在买入股票前卖出股票。
@@ -108,26 +110,30 @@ arr = [3, 2, 6, 5, 0, 3]
 result = maxProfitBuyMultipleTimesWithFee(arr, 2)
 print(result)
 
-# 给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格, 只能交易K次
+# 给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格, 只能交易2次
 # 设计一个算法来计算你所能获取的最大利润。你可以尽可能地完成更多的交易（多次买卖一支股票）。
 # 注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票
-def maxProfitBuyMultipleTimes(arr: list, k: int):
+def maxProfitBuy2Times(arr: list):
     if len(arr) < 2:
         return 0
     
     # base case
     holdCash = 0
     holdStock = 0 - arr[0]
-    dp = [[holdCash, holdStock]]
+    times = 2
+    dp = np.zeros((len(arr), times + 1, 2))
+    #base case
+    for k in range(times + 1):
+        dp[0][k][0] = holdCash
+        dp[0][k][1] = holdStock
 
     for i in range(1, len(arr)):
-        for j in range(k, 0, -1):
-            holdCash = max(dp[i - 1][k][0], dp[i - 1][k][1] + arr[i])  #sell the stock
-            holdStock = max(dp[i - 1][k][1], dp[i - 1][k - 1][0] - arr[i]) #buy the stock
-            dp.append([j, holdCash, holdStock])
+        for k in range(1, times + 1):
+            dp[i][k][0] = max(dp[i - 1][k][0], dp[i - 1][k][1] + arr[i])  #sell the stock
+            dp[i][k][1] = max(dp[i - 1][k][1], dp[i - 1][k - 1][0] - arr[i]) #buy the stock
 
-    return dp[len(arr) - 1][0]
+    return dp[len(arr) - 1][times][0]
     
-arr = [3, 2, 6, 5, 0, 3]
-result = maxProfitBuyMultipleTimes(arr)
+arr = [3, 3, 5, 0, 0, 3, 1, 4]
+result = maxProfitBuy2Times(arr)
 print(result)
