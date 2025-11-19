@@ -2,7 +2,9 @@
 To Learn PyTorch
 
 docker pull pytorch/pytorch
+cd C:\LocalGit\PyTorch (the project folder)
 docker run -it --rm -v ${pwd}/:/workspace pytorch/pytorch
+pip install pandas
 
 
 http://neuralnetworksanddeeplearning.com/
