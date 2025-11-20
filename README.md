@@ -5,7 +5,7 @@ docker pull pytorch/pytorch:2.2.2-cuda12.1-cudnn8-devel
 cd C:\LocalGit\PyTorch (the project folder)
 docker run -it --rm -v ${pwd}/:/workspace pytorch/pytorch:2.2.2-cuda12.1-cudnn8-devel
 pip install pandas
-pip install torchtext==0.17.2
+pip install torchtext==0.17.2 torchdata==0.7.1 portalocker>=2.0.0
 
 
 http://neuralnetworksanddeeplearning.com/
