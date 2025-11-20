@@ -1,11 +1,11 @@
 # PyTorch
 To Learn PyTorch
 
-docker pull pytorch/pytorch
+docker pull pytorch/pytorch:2.2.2-cuda12.1-cudnn8-devel
 cd C:\LocalGit\PyTorch (the project folder)
-docker run -it --rm -v ${pwd}/:/workspace pytorch/pytorch
+docker run -it --rm -v ${pwd}/:/workspace pytorch/pytorch:2.2.2-cuda12.1-cudnn8-devel
 pip install pandas
-pip install torchtext
+pip install torchtext==0.17.2
 
 
 http://neuralnetworksanddeeplearning.com/
@@ -14,3 +14,7 @@ git clone https://github.com/mnielsen/neural-networks-and-deep-learning.git
 
 https://www.runoob.com/pytorch/pytorch-tutorial.html
 
+to dig version conflict:
+python -V
+pip list | grep -E "torch|torchtext"
+ldd /opt/conda/lib/python3.10/site-packages/torchtext/lib/libtorchtext.so
