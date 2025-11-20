@@ -5,6 +5,7 @@ docker pull pytorch/pytorch
 cd C:\LocalGit\PyTorch (the project folder)
 docker run -it --rm -v ${pwd}/:/workspace pytorch/pytorch
 pip install pandas
+pip install torchtext
 
 
 http://neuralnetworksanddeeplearning.com/
