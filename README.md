@@ -17,3 +17,9 @@ to dig version conflict:
 python -V
 pip list | grep -E "torch|torchtext"
 ldd /opt/conda/lib/python3.10/site-packages/torchtext/lib/libtorchtext.so
+
+
+HuggingFace
+docker pull huggingface/transformers-pytorch-cpu
+cd C:\LocalGit\PyTorch (the project folder)
+docker run -it --rm -v ${pwd}/:/workspace huggingface/transformers-pytorch-cpu

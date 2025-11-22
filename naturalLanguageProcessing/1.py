@@ -3,7 +3,7 @@ from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torch.utils.data import DataLoader
 
-train_iter, test_iter = IMDB(split('train', 'test'))
+train_iter, test_iter = IMDB(split=('train', 'test'))
 tokenizer = get_tokenizer('basic_english')
 
 def yield_tokens(data_iter):
