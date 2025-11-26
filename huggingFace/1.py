@@ -9,8 +9,8 @@ review = "The apartment was spotless and in a perfect location! will definitely 
 result = classifier(review)
 print(result)
 
-classifier = pipeline("sentiment-analysis",
-    model="cardiffnlp/twitter-roberta-base-sentiment-latest")
-review = "The apartment was spotless and in a pefect location! will definitely come back."
-result = classifier(review)
-print(result)
+# classifier = pipeline("sentiment-analysis",
+#     model="cardiffnlp/twitter-roberta-base-sentiment-latest")
+# review = "The apartment was spotless and in a pefect location! will definitely come back."
+# result = classifier(review)
+# print(result)

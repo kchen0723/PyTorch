@@ -1,15 +1,18 @@
 from transformers import pipeline
-# 零样本分类管道
-classifier = pipeline("zero-shot-classification")
 
-# 定义你关心的主题（标签）
-topic_candidates = ["cleanliness", "location", "value for money", "host communication", "amenities", "check-in process"]
+sentiment_pipeline = pipeline("sentiment-analysis")  #情感分析
+generator = pipeline("text-generation")              #文本生成
+qa_pipeline = pipeline("question-answering")         #问答系统 
+# summarizer = pipeline("summarization")               #文本摘要
 
-# 对评论进行分类
-review = "The host was very responsive and the apartment had a great view, but it wasn't as clean as I expected."
-result = classifier(review, topic_candidates)
+from transformers import AutoModel, AutoTokenizer
+model_name = "bert-base-chinese"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModel.from_pretrained(model_name)
 
-print(f"Review: {review}")
-print("Topics mentioned:")
-for topic, score in zip(result['labels'], result['scores']):
-    print(f"  - {topic}: {score:.4f}")
+text = "Helllo, how are you?"
+encoded = tokenizer(text, return_tensors="pt")
+print(encoded)
+
+decoded = tokenizer.decode(encoded["input_ids"][0])
+print(decoded)
