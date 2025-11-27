@@ -35,11 +35,12 @@ class ChatBot:
     def reset_chat(self):
         self.chat_history_ids = None
 
-chatobot = ChatBot()
+path = "/models/GODEL-v1_1-base-seq2seq"
+chatobot = ChatBot(path)
 
 print("starting, quit to quit")
 while True:
-    user_input = input("")
+    user_input = input("hello:")
     if user_input.lower() == "quit":
         break
 
