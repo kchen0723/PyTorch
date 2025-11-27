@@ -1,3 +1,6 @@
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
 #推理加速
 
 class FastInference:

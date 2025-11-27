@@ -5,8 +5,8 @@ import torch
 class CustomSentimentPipeline(Pipeline):
     def __init__(self, model, tokenizer, **kwargs):
         super().__init__(model=model, tokenizer=tokenizer, **kwargs)
-
-    def _santize_parameters(self, **kwargs):
+  
+    def _sanitize_parameters(self, **kwargs):
         preprocess_params = {}
         postprocess_params = {}
 
@@ -36,7 +36,7 @@ class CustomSentimentPipeline(Pipeline):
         logits = model_outputs.logits
         probabilities = torch.softmax(logits, dim=-1)
         predicated_class = torch.argmax(probabilities, dim=-1).item()
-        confidence = probilities[0][predicated_class].item()
+        confidence = probabilities[0][predicated_class].item()
 
         return {
             "label": "POSITIVE" if predicated_class == 1 else "NEGATIVE",
@@ -44,7 +44,7 @@ class CustomSentimentPipeline(Pipeline):
             "confident": confidence > threshold
         }
     
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoModel, AutoTokenizer, AutoModelForSequenceClassification
 from transformers.pipelines import PIPELINE_REGISTRY
 
 model = AutoModelForSequenceClassification.from_pretrained("bert-base-chinese", num_labels=2)
