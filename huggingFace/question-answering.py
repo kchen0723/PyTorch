@@ -1,8 +1,11 @@
 from transformers import pipeline
+import sys
+import io
 #问答系统
 
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 qa_pipeline = pipeline("question-answering",
-                       model="uer/roberta-base-chinese-extractive-qa")
+                       model="bert-base-chinese")
 
 context = """"
 人工智能（AI）是计算机科学的一个分支，它试图理解智能的实质，

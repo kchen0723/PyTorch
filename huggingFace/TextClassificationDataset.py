@@ -9,7 +9,7 @@ from torch.utils.data import Dataset
 class TextClassificationDataset(Dataset):
     def __init__(self, texts, labels, tokenizer, max_length=512):
         self.texts = texts
-        self.lables = labels
+        self.labels = labels
         self.tokenizer = tokenizer
         self.max_length = max_length
 
@@ -20,7 +20,7 @@ class TextClassificationDataset(Dataset):
         text = str(self.texts[idx])
         label = self.labels[idx]
 
-        enconding = self.tokenizer(
+        encoding = self.tokenizer(
             text,
             truncation=True,
             padding='max_length',
@@ -28,8 +28,8 @@ class TextClassificationDataset(Dataset):
             return_tensors='pt'
         )
         return{
-            'input_ids': enconding['input_ids'].flatten(),
-            'attention_mask': enconding['attention_mask'].flatten(),
+            'input_ids': encoding['input_ids'].flatten(),
+            'attention_mask': encoding['attention_mask'].flatten(),
             'labels': torch.tensor(label, dtype=torch.long)
         }
 
@@ -99,7 +99,7 @@ def predict_with_trained_model(text):
 
 if __name__ == "__main__":
     trainer = train_classifier()
-    test_text = ""
+    test_text = "this product is very good"
     pred_class, confidence = predict_with_trained_model(test_text)
     print(pred_class)
     print(confidence)
