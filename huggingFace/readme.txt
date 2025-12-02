@@ -29,6 +29,12 @@ path = "/models/GODEL-v1_1-base-seq2seq"
 tokenizer = AutoTokenizer.from_pretrained(path)
 model = AutoModelForSeq2SeqLM.from_pretrained(path)
 
+================================================================================
+前端用Ollama, 极其简单。
+或者用text-generation-webui，这个不太好看
+或者用hugging face的chat UI, 按照教程进行配置就可以连接上hugging face。
+chat UI中OPENAI_BASE_URL=http://localhost:11434/v1，即可以让chat UI 连接上本地ollama 
+
 =================================================================================
 HuggingFace Transformers 内置 pipeline() 全任务列表
 🟦 NLP（自然语言处理）任务
