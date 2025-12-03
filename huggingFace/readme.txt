@@ -1,8 +1,8 @@
 conda create --name hf_env python=3.10
 conda activate hf_env
 conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
-conda install transformers scikit-learn accerate evalute
-pip install fastapi matplotlib uvicorn
+conda install transformers scikit-learn 
+pip install fastapi matplotlib uvicorn pandas
 
 https://blog.csdn.net/qq_75211380/article/details/149243540
 http://www.360doc.com/content/25/1019/22/62738899_1163323291.shtml
