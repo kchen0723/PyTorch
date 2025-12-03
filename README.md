@@ -4,7 +4,7 @@ To Learn PyTorch
 docker pull pytorch/pytorch:2.2.2-cuda12.1-cudnn8-devel
 cd C:\LocalGit\PyTorch (the project folder)
 docker run -it --rm -v ${pwd}/:/workspace pytorch/pytorch:2.2.2-cuda12.1-cudnn8-devel
-pip install pandas==2.1.4 torchtext==0.17.2 torchdata==0.7.1 portalocker==2.0.0
+pip install pandas==2.1.4 torchdata==0.7.1 portalocker==2.0.0
 
 
 http://neuralnetworksanddeeplearning.com/
@@ -15,8 +15,7 @@ https://www.runoob.com/pytorch/pytorch-tutorial.html
 
 to dig version conflict:
 python -V
-pip list | grep -E "torch|torchtext"
-ldd /opt/conda/lib/python3.10/site-packages/torchtext/lib/libtorchtext.so
+pip list | grep -E "torch"
 
 
 HuggingFace

@@ -34,7 +34,12 @@ model = AutoModelForSeq2SeqLM.from_pretrained(path)
 或者用text-generation-webui，这个不太好看
 或者用hugging face的chat UI, 按照教程进行配置就可以连接上hugging face。
 chat UI中OPENAI_BASE_URL=http://localhost:11434/v1，即可以让chat UI 连接上本地ollama 
-
+=====================================================================================
+用ｆａｓｔＡＰＩ来启动服务
+pip install fastapi uvicorn transformers
+pip install requests huggingface_hub
+然后运行命令：
+uvicorn FirstFastApi:app --reload --port 8000
 =================================================================================
 HuggingFace Transformers 内置 pipeline() 全任务列表
 🟦 NLP（自然语言处理）任务
