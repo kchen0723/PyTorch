@@ -1,15 +1,8 @@
-base install:
-pip install transformers
-pip install transformers[torch]
-pip install transformers[tf]
-pip install transformers[torch, tf, audio, vision]
-
-dependency install:
-pip install torch torchvision torchaudio
-pip install numpy pandas matplotlib
-pip install datasets
-pip install accerate
-pip install evalute
+conda create --name hf_env python=3.10
+conda activate hf_env
+conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+conda install transformers scikit-learn accerate evalute
+pip install fastapi matplotlib uvicorn
 
 https://blog.csdn.net/qq_75211380/article/details/149243540
 http://www.360doc.com/content/25/1019/22/62738899_1163323291.shtml
@@ -36,8 +29,7 @@ model = AutoModelForSeq2SeqLM.from_pretrained(path)
 chat UI中OPENAI_BASE_URL=http://localhost:11434/v1，即可以让chat UI 连接上本地ollama 
 =====================================================================================
 用ｆａｓｔＡＰＩ来启动服务
-pip install fastapi uvicorn transformers
-pip install requests huggingface_hub
+pip install fastapi uvicorn 
 然后运行命令：
 uvicorn FirstFastApi:app --reload --port 8000
 =================================================================================

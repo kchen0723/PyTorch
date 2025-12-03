@@ -56,6 +56,6 @@ PIPELINE_REGISTRY.register_pipeline(
     pt_model=AutoModelForSequenceClassification,
 )
 
-custom_pipeline = pipeline("custom-sentiment", model=model, tokenizer=tokenizer)
-resut=custom_pipeline("this produce is very good", threshold=0.8)
+custom_pipeline = Pipeline("custom-sentiment", model=model, tokenizer=tokenizer)
+result=custom_pipeline("this produce is very good", threshold=0.8)
 print(result)
