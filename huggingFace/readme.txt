@@ -1,8 +1,8 @@
-# laptop is Alienware m15 R7 with NVIDIA GeForce RTX 3070Ti, use python=3.10, pytorch = 2.9, transformers = 4.57
-# the latest python =3.14, pytorch = 2.9.1, pytorch-cuda=12.6, transformers = 4.57.3
-conda create --name torch29 python=3.10
+# laptop is Alienware m15 R7 with NVIDIA GeForce RTX 3070Ti
+# the latest python =3.14, pytorch = 2.9, pytorch-cuda=12.6, transformers = 4.57, as the full tested pytorch_cuda version is pytorch2.9.1+cu126
+conda create --name torch29 python=3.14
 conda activate torch29
-pip install torch==2.9.1 --index-url https://download.pytorch.org/whl/cu126
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
 pip install fastapi matplotlib uvicorn pandas pillow torchvision Datasets scikit-learn transformers==4.57 
 
 
