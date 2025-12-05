@@ -1,8 +1,10 @@
-# laptop is Alienware m15 R7 with NVIDIA GeForce RTX 3070Ti, use python=3.10, pytorch = 2.6, transformers = 4.57
-conda create --name torch26 python=3.10
-conda activate torch26
-pip install fastapi matplotlib uvicorn pandas pillow torchvision transformers==4.57
-conda install pytorch==2.6 pytorch-cuda==12.1 Datasets scikit-learn -c pytorch -c nvidia
+# laptop is Alienware m15 R7 with NVIDIA GeForce RTX 3070Ti, use python=3.10, pytorch = 2.9, transformers = 4.57
+# the latest python =3.14, pytorch = 2.9.1, pytorch-cuda=12.6, transformers = 4.57.3
+conda create --name torch29 python=3.10
+conda activate torch29
+pip install torch==2.9.1 --index-url https://download.pytorch.org/whl/cu126
+pip install fastapi matplotlib uvicorn pandas pillow torchvision Datasets scikit-learn transformers==4.57 
+
 
 https://blog.csdn.net/qq_75211380/article/details/149243540
 http://www.360doc.com/content/25/1019/22/62738899_1163323291.shtml
