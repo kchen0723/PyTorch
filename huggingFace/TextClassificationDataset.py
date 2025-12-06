@@ -51,7 +51,7 @@ def prepare_data():
 def train_classifier():
     train_texts, test_texts, train_labels, test_labels = prepare_data()
 
-    model_name = 'bert-base-chinese'
+    model_name = 'hfl/chinese-roberta-wwm-ext'
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
 
@@ -66,7 +66,7 @@ def train_classifier():
         warmup_steps=500,
         weight_decay=0.01,
         logging_dir='./logs',
-        evaluation_strategy='epoch',
+        eval_strategy='epoch',
         save_strategy='epoch',
         load_best_model_at_end=True
     )

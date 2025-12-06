@@ -3,7 +3,7 @@
 conda create --name torch29 python=3.14
 conda activate torch29
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
-pip install fastapi matplotlib uvicorn pandas pillow torchvision Datasets scikit-learn transformers==4.57 
+pip install fastapi matplotlib uvicorn pandas pillow torchvision Datasets scikit-learn accelerate transformers==4.57 
 
 
 https://blog.csdn.net/qq_75211380/article/details/149243540
