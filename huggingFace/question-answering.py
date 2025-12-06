@@ -5,7 +5,7 @@ import io
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 qa_pipeline = pipeline("question-answering",
-                       model="bert-base-chinese")
+                       model="uer/roberta-base-chinese-extractive-qa")
 
 context = """"
 人工智能（AI）是计算机科学的一个分支，它试图理解智能的实质，
