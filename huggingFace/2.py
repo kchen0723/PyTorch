@@ -1,6 +1,9 @@
 from transformers import pipeline
+import torch
 
-sentiment_pipeline = pipeline("sentiment-analysis")
+sentiment_pipeline = pipeline("text-classification",
+                    model="cardiffnlp/twitter-roberta-base-sentiment-latest",
+                    device=0 if torch.cuda.is_available() else -1)
 
 reviews = [
     "The apartment was spotless and in a pefect location! will definitely come back.",
