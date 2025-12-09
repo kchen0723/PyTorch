@@ -11,7 +11,7 @@ class ChatBot:
     def chat(self, user_input):
         new_user_input_ids = self.tokenizer.encode(
             user_input + self.tokenizer.eos_token,
-            return_tensor='pt'
+            return_tensors='pt'
         )
 
         bot_input_ids = torch.cat([self.chat_history_ids, new_user_input_ids], dim=-1) \
@@ -35,8 +35,7 @@ class ChatBot:
     def reset_chat(self):
         self.chat_history_ids = None
 
-path = "/models/GODEL-v1_1-base-seq2seq"
-chatobot = ChatBot(path)
+chatbot = ChatBot()
 
 print("starting, quit to quit")
 while True:
@@ -45,4 +44,4 @@ while True:
         break
 
     response = chatbot.chat(user_input)
-    print("{response}")
+    print(f"{response}")
