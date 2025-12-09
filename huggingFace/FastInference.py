@@ -24,24 +24,24 @@ class FastInference:
                 max_length=512,
                 return_tensors="pt"
             )
-        if torch.cuda.is_available():
-            inputs = {k: v.cuda() for k, v in inputs.items()}
-        
-        outputs = self.modle(**inputs)
-        predications = torch.softmax(outputs.logits, dim=-1)
+            if torch.cuda.is_available():
+                inputs = {k: v.cuda() for k, v in inputs.items()}
+            
+            outputs = self.model(**inputs)
+            predications = torch.softmax(outputs.logits, dim=-1)
 
-        for j, pred in enumerate(predications):
-            predicated_class = torch.argmax(pred).item()
-            confidence = pred[predicated_class].item()
-            results.append({
-                "text": batch_texts[j],
-                "class": predicated_class,
-                "confidence": confidence
-            })
+            for j, pred in enumerate(predications):
+                predicated_class = torch.argmax(pred).item()
+                confidence = pred[predicated_class].item()
+                results.append({
+                    "text": batch_texts[j],
+                    "class": predicated_class,
+                    "confidence": confidence
+                })
 
         return results
 
-fast_inference = FastInference("./my_model")
+fast_inference = FastInference("./my_classifier")
 texts=["text1", "text2", "text3"] * 100
-results = fast_inference.predict_batch(texts, batch_size=16)
+results = fast_inference.predicate_batch(texts, batch_size=16)
 print(f"processed {len(results)} texts")
