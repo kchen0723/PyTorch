@@ -1,4 +1,4 @@
-from transformers import Pipeline
+from transformers import Pipeline, pipeline
 import torch
 #自定义Pipeline
 
@@ -56,6 +56,6 @@ PIPELINE_REGISTRY.register_pipeline(
     pt_model=AutoModelForSequenceClassification,
 )
 
-custom_pipeline = Pipeline("custom-sentiment", model=model, tokenizer=tokenizer)
+custom_pipeline = pipeline("custom-sentiment", model=model, tokenizer=tokenizer)
 result=custom_pipeline("this produce is very good", threshold=0.8)
 print(result)

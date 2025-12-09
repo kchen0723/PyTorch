@@ -3,9 +3,11 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 #内存优化
 
 def optimize_memory():
-    model = AutoModelForSequenceClassification.from_pretrained("bert-base-chinese", gradient_checkpointing=True)
+    model = AutoModelForSequenceClassification.from_pretrained("bert-base-chinese")
+    model.gradient_checkpointing_enable()
+    mode = model.cuda()
 
-    from torch.cuda.amp import autocase, GradScaler
+    from torch.cuda.amp import autocast, GradScaler
     scaler = GradScaler()
     optimizer = torch.optim.AdamW(model.parameters(), lr=2e-5)
 
@@ -23,5 +25,5 @@ def optimize_memory():
     return train_step_with_amp
 
 if torch.cuda.is_available():
-    train_step = optimizer_memory()
+    train_step = optimize_memory()
     print("memory optimized")

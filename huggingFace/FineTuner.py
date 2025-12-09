@@ -62,7 +62,7 @@ class FineTuner:
             weight_decay=0.01,
             logging_dir=f'{output_dir}/logs',
             logging_steps=100,
-            evaluation_strategy='steps',
+            eval_strategy='steps',
             eval_steps=500,
             save_strategy='steps',
             load_best_model_at_end=True,
