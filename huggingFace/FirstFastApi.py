@@ -7,6 +7,8 @@ from pydantic import BaseModel
 from transformers import pipeline
 from typing import List, Dict
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+import asyncio
 
 class ChatCompletionRequest(BaseModel):
     model: str
@@ -14,6 +16,7 @@ class ChatCompletionRequest(BaseModel):
     stream: bool = False
 
 app = FastAPI()
+model_name = "Qwen/Qwen2.5-0.5B-Instruct"
 
 # Allow ChatUI to connect
 app.add_middleware(
@@ -24,20 +27,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load Qwen instruction model
-# chatbot = pipeline(
-#     "text-generation",
-#     model="Qwen/Qwen2.5-0.5B-Instruct",
-#     device=0 if torch.cuda.is_available() else -1
-# )
-
+# Load model
 chatbot = pipeline(
     "text-generation",
-    model="gpt2",
+    model = model_name,
     device=0 if torch.cuda.is_available() else -1
 )
 
-# HuggingFace ChatUI expects this exact endpoint
 @app.get("/models")
 def list_models():
     return {
@@ -45,27 +41,15 @@ def list_models():
         "data": [
             {
                 "id": "gpt2",
-                "object": "model",
+                "object": model_name,
                 "owned_by": "local",
                 "permission": []
             }
         ]
     }
 
-@app.post("/chat/completions")
-def chat_completions(request: ChatCompletionRequest):
-    # Concatenate all user and assistant messages for multi-turn
-    prompt = ""
-    for msg in request.messages:
-        role = msg.get("role")
-        content = msg.get("content", "")
-        if role == "user":
-            prompt += f"用户: {content}\n"
-        elif role == "assistant":
-            prompt += f"助手: {content}\n"
-
-    prompt += "助手: "
-
+# Generator for streaming tokens
+async def generate_stream(prompt: str, model: str):
     response = chatbot(
         prompt,
         max_new_tokens=128,
@@ -74,39 +58,96 @@ def chat_completions(request: ChatCompletionRequest):
         temperature=0.9,
         pad_token_id=chatbot.tokenizer.eos_token_id
     )
-    print(f"request is: {request}")
-    print(f"response is: {response}")
     generated = response[0]["generated_text"]
-    # Only take new output after the prompt
     reply = generated[len(prompt):].strip()
-    if not reply:
-        reply = "抱歉，我暂时无法生成回答。"
 
-    print(f"reply is: {reply}")
     response_id = f"chatcmpl-{int(time.time())}"
-    result = {
+
+    # Stream token by token (or chunk)
+    for i, token in enumerate(reply.split()):
+        chunk = {
+            "id": response_id,
+            "object": "chat.completion.chunk",
+            "created": int(time.time()),
+            "model": model,
+            "choices": [
+                {
+                    "index": 0,
+                    "delta": {"content": token + " "},
+                    "finish_reason": None
+                }
+            ]
+        }
+        yield f"data: {json.dumps(chunk)}\n\n"
+        await asyncio.sleep(0.05)  # simulate streaming delay
+
+    # Final stop message
+    final_chunk = {
         "id": response_id,
-        "object": "chat.completion",
-        "created": int(time.time()),        
-        "model": request.model,
+        "object": "chat.completion.chunk",
+        "created": int(time.time()),
+        "model": model,
         "choices": [
             {
                 "index": 0,
-                "text": "hello, this is my reply",
-                # "message": {"role": "assistant", "content": "hello, this is my reply"},
+                "delta": {},
                 "finish_reason": "stop"
             }
-        ],
-        "usage": {
-            "prompt_tokens": len(prompt.split()),
-            "completion_tokens": 2,
-            "total_tokens": len(prompt.split()) + 2
-        }
+        ]
     }
-    result_string = json.dumps(result)
-    print(result_string)
-    return result
+    yield f"data: {json.dumps(final_chunk)}\n\n"
+    yield "data: [DONE]\n\n"
 
+@app.post("/chat/completions")
+async def chat_completions(request: ChatCompletionRequest):
+    # Concatenate messages
+    prompt = ""
+    for msg in request.messages:
+        role = msg.get("role")
+        content = msg.get("content", "")
+        if role == "user":
+            prompt += f"用户: {content}\n"
+        elif role == "assistant":
+            prompt += f"助手: {content}\n"
+    prompt += "助手: "
+
+    if request.stream:
+        return StreamingResponse(
+            generate_stream(prompt, request.model),
+            media_type="text/event-stream"
+        )
+    else:
+        # Non-streaming fallback
+        response = chatbot(
+            prompt,
+            max_new_tokens=128,
+            do_sample=True,
+            top_p=0.9,
+            temperature=0.9,
+            pad_token_id=chatbot.tokenizer.eos_token_id
+        )
+        generated = response[0]["generated_text"]
+        reply = generated[len(prompt):].strip()
+        response_id = f"chatcmpl-{int(time.time())}"
+        result = {
+            "id": response_id,
+            "object": "chat.completion",
+            "created": int(time.time()),
+            "model": request.model,
+            "choices": [
+                {
+                    "index": 0,
+                    "message": {"role": "assistant", "content": reply},
+                    "finish_reason": "stop"
+                }
+            ],
+            "usage": {
+                "prompt_tokens": len(prompt.split()),
+                "completion_tokens": len(reply.split()),
+                "total_tokens": len(prompt.split()) + len(reply.split())
+            }
+        }
+        return result
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
