@@ -34,6 +34,7 @@ chatbot = pipeline(
     device=0 if torch.cuda.is_available() else -1
 )
 
+#OPENAI_BASE_URL=http://127.0.0.1:8000/ for huggingface chatui, please use this URL.
 @app.get("/models")
 def list_models():
     return {
