@@ -16,9 +16,6 @@ class ChatCompletionRequest(BaseModel):
     stream: bool = False
 
 app = FastAPI()
-model_name = "Qwen/Qwen2.5-0.5B-Instruct"
-
-# Allow ChatUI to connect
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
@@ -27,7 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load model
+model_name = "Qwen/Qwen2.5-0.5B-Instruct"
 chatbot = pipeline(
     "text-generation",
     model = model_name,
@@ -41,7 +38,7 @@ def list_models():
         "object": "list",
         "data": [
             {
-                "id": "gpt2",
+                "id": model_name,
                 "object": model_name,
                 "owned_by": "local",
                 "permission": []
@@ -50,22 +47,9 @@ def list_models():
     }
 
 # Generator for streaming tokens
-async def generate_stream(prompt: str, model: str):
-    response = chatbot(
-        prompt,
-        max_new_tokens=128,
-        do_sample=True,
-        top_p=0.9,
-        temperature=0.9,
-        pad_token_id=chatbot.tokenizer.eos_token_id
-    )
-    generated = response[0]["generated_text"]
-    reply = generated[len(prompt):].strip()
-
-    response_id = f"chatcmpl-{int(time.time())}"
-
+async def generate_stream(reply: str, response_id: str, model: str):
     # Stream token by token (or chunk)
-    for i, token in enumerate(reply.split()):
+    for _, token in enumerate(reply.split()):
         chunk = {
             "id": response_id,
             "object": "chat.completion.chunk",
@@ -99,9 +83,7 @@ async def generate_stream(prompt: str, model: str):
     yield f"data: {json.dumps(final_chunk)}\n\n"
     yield "data: [DONE]\n\n"
 
-@app.post("/chat/completions")
-async def chat_completions(request: ChatCompletionRequest):
-    # Concatenate messages
+def prepare_prompt(request: ChatCompletionRequest):
     prompt = ""
     for msg in request.messages:
         role = msg.get("role")
@@ -111,25 +93,33 @@ async def chat_completions(request: ChatCompletionRequest):
         elif role == "assistant":
             prompt += f"助手: {content}\n"
     prompt += "助手: "
+    return prompt
+
+def prepare_reply_and_response_id(prompt: str):
+    response = chatbot(
+        prompt,
+        max_new_tokens=128,
+        do_sample=True,
+        top_p=0.9,
+        temperature=0.9,
+        pad_token_id=chatbot.tokenizer.eos_token_id
+    )
+    generated = response[0]["generated_text"]
+    reply = generated[len(prompt):].strip()
+    response_id = f"chatcmpl-{int(time.time())}"
+    return reply, response_id
+    
+@app.post("/chat/completions")
+async def chat_completions(request: ChatCompletionRequest):
+    prompt = prepare_prompt(request)
+    reply, response_id = prepare_reply_and_response_id(prompt)
 
     if request.stream:
         return StreamingResponse(
-            generate_stream(prompt, request.model),
+            generate_stream(reply, response_id, request.model),
             media_type="text/event-stream"
         )
     else:
-        # Non-streaming fallback
-        response = chatbot(
-            prompt,
-            max_new_tokens=128,
-            do_sample=True,
-            top_p=0.9,
-            temperature=0.9,
-            pad_token_id=chatbot.tokenizer.eos_token_id
-        )
-        generated = response[0]["generated_text"]
-        reply = generated[len(prompt):].strip()
-        response_id = f"chatcmpl-{int(time.time())}"
         result = {
             "id": response_id,
             "object": "chat.completion",
