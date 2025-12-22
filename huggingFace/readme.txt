@@ -5,6 +5,8 @@ conda activate torch29
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
 pip install fastapi matplotlib uvicorn pandas pillow torchvision Datasets scikit-learn accelerate transformers==4.57 
 
+vllm commad:
+vllm serve Qwen/Qwen2.5-1.5B-Instruct --gpu-memory-utilization 0.7
 
 https://blog.csdn.net/qq_75211380/article/details/149243540
 http://www.360doc.com/content/25/1019/22/62738899_1163323291.shtml
