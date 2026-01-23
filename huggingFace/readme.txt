@@ -7,6 +7,17 @@ pip install fastapi matplotlib uvicorn pandas pillow torchvision Datasets scikit
 
 vllm commad:
 vllm serve Qwen/Qwen2.5-1.5B-Instruct --gpu-memory-utilization 0.7
+vllm serve zai-org/AutoGLM-Phone-9B-Multilingual --gpu-memory-utilization 0.7
+vllm serve zai-org/AutoGLM-Phone-9B-Multilingual --gpu-memory-utilization 0.85 --max-model-len 4096 --enforce-eager
+vllm serve ./autoglm-phone-9b-multilingual-q4_k_m.gguf --gpu-memory-utilization 0.85 --max-model-len 4096 --enforce-eage
+Luckybalabala/AutoGLM-Phone-9B-GGUF
+BlcaCola/AutoGLM-Phone-9B-GGUF
+
+
+./build/bin/llama-server -m AutoGLM-Phone-9B-Q4_K_M.gguf --mmproj AutoGLM-Phone-9B-mmproj.gguf --host 0.0.0.0 --port 8000 -ngl 32
+python scripts/check_deployment_cn.py --base-url http://127.0.0.1:8000/v1/ --model AutoGLM-Phone-9B-Q4_K_M.gguf
+python main.py --base-url http://localhost:8000/v1 --model "AutoGLM-Phone-9B-Q4_K_M.gguf"
+
 
 https://blog.csdn.net/qq_75211380/article/details/149243540
 http://www.360doc.com/content/25/1019/22/62738899_1163323291.shtml
