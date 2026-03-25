@@ -41,8 +41,8 @@ h, w, _ = image_cv2.shape
 # --- 3. 阶段一：OWL-ViT 文本定位 (无需训练) ---
 # 定义你想标注的文字提示 (文本 Prompt)
 # 我们这里同时寻找比萨和锡箔纸
-candidate_labels = ["pizza", "aluminum foil"] 
-SCORE_THRESHOLD = 0.1 # 检测框的置信度阈值，OWL-ViT 默认偏低，可以设小一点
+candidate_labels = ["lasagna", "aluminum foil"] 
+SCORE_THRESHOLD = 0.01 # 检测框的置信度阈值，OWL-ViT 默认偏低，可以设小一点
 
 print(f"Processing image with text prompts: {candidate_labels}...")
 

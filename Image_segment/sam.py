@@ -15,7 +15,7 @@ sam.to(device=device)
 mask_generator = SamAutomaticMaskGenerator(
     model=sam,
     points_per_side=24,           # 降低采样点，减少褶皱干扰
-    pred_iou_thresh=0.8,          # 稍微放宽，允许捕获更多铝箔纸区域
+    pred_iou_thresh=2.8,          # 稍微放宽，允许捕获更多铝箔纸区域
     stability_score_thresh=0.9,
     min_mask_region_area=200      # 过滤微小杂点
 )
